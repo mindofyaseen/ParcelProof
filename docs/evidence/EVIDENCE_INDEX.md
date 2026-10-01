@@ -14,3 +14,5 @@ Only completed, reproducible evidence is marked verified.
 | Browser-rendered judge workflow | Verified | [Screenshot](live-judge-workflow.png) |
 | Product UI — desktop | Verified | [Screenshot](product-ui-desktop.png) |
 | Product UI — mobile | Verified | [Screenshot](product-ui-mobile.png) |
+| Skill-led UI v3 — desktop | Verified | [Screenshot](ui-v3-desktop.png) |
+| Skill-led UI v3 — mobile | Verified | [Screenshot](ui-v3-mobile.png) |

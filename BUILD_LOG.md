@@ -65,3 +65,12 @@ Factual development record for the AWS Zero to Shipped submission. Public eviden
 - Result: Desktop and 390 px mobile visual QA passed against CloudFront. The real judge CTA still creates an order and reaches the private upload workflow. The stack returned to `UPDATE_COMPLETE`.
 - Quality gate: lint and typecheck pass; 12 unit/infrastructure tests and the dedicated production Playwright test pass.
 - Evidence: `docs/evidence/product-ui-desktop.png` and `docs/evidence/product-ui-mobile.png`.
+
+## 2026-10-01 20:38 PKT — Skill-led visual redesign
+
+- Goal: Replace the overly synthetic CSS composition with a clearer, more memorable product identity.
+- Design process: Installed the official `figma-generate-design` and `figma-implement-design` skills, then applied their design-system, token, section-by-section, responsive, and screenshot-validation methodology. A Figma source file was not available, so no Figma MCP write was attempted.
+- Asset process: Used the built-in ImageGen workflow to create a bespoke transparent 3D ParcelProof inspection hero, then saved the final asset at `apps/web/public/assets/parcelproof-3d-hero.png`.
+- Result: Reworked the hero around a single premium focal asset, stronger commercial copy, restrained verification overlays, cleaner spacing, and responsive scale. Production desktop and 390 px mobile screenshots contain no runtime error banner.
+- Quality gate: lint, typecheck, 12 unit/infrastructure tests, production build, live Playwright CTA/order workflow, and AWS deployment pass. Stack status is `UPDATE_COMPLETE`.
+- Evidence: `docs/evidence/ui-v3-desktop.png` and `docs/evidence/ui-v3-mobile.png`.
