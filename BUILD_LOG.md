@@ -57,3 +57,11 @@ Factual development record for the AWS Zero to Shipped submission. Public eviden
 - Evidence: [Phase 2 live flow](docs/evidence/phase-2-live-flow.md), controlled fixtures, and `docs/evidence/live-judge-workflow.png`.
 - Quality gate: lint, typecheck, production build, CDK synth, 12 tests across four suites, and live Chromium smoke test pass.
 - Decision/next step: Keep the MVP frozen to the brief. Remaining submission work is the manual demo recording and hackathon form.
+
+## 2026-10-01 20:29 PKT — Product-grade 3D interface upgrade
+
+- Goal: Make the live experience read as a complete commercial product while preserving the exact MVP boundary.
+- Agent action: Added a cursor-responsive 3D inspection deck, animated scan and evidence overlays, live dispatch dashboard, privacy-vault visualization, decision-engine widget, stronger product navigation, responsive motion, and reduced-motion fallbacks. No WebGL or heavy runtime dependency was introduced.
+- Result: Desktop and 390 px mobile visual QA passed against CloudFront. The real judge CTA still creates an order and reaches the private upload workflow. The stack returned to `UPDATE_COMPLETE`.
+- Quality gate: lint and typecheck pass; 12 unit/infrastructure tests and the dedicated production Playwright test pass.
+- Evidence: `docs/evidence/product-ui-desktop.png` and `docs/evidence/product-ui-mobile.png`.

@@ -12,3 +12,5 @@ Only completed, reproducible evidence is marked verified.
 | Public API health response | Verified | [Health endpoint](https://ebuk0g78lb.execute-api.us-east-1.amazonaws.com/health) |
 | Live order/upload/Bedrock/policy/history slice | Verified | [Phase 2 live flow](phase-2-live-flow.md) |
 | Browser-rendered judge workflow | Verified | [Screenshot](live-judge-workflow.png) |
+| Product UI — desktop | Verified | [Screenshot](product-ui-desktop.png) |
+| Product UI — mobile | Verified | [Screenshot](product-ui-mobile.png) |
