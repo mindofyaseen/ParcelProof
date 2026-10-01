@@ -16,3 +16,4 @@ Only completed, reproducible evidence is marked verified.
 | Product UI — mobile | Verified | [Screenshot](product-ui-mobile.png) |
 | Skill-led UI v3 — desktop | Verified | [Screenshot](ui-v3-desktop.png) |
 | Skill-led UI v3 — mobile | Verified | [Screenshot](ui-v3-mobile.png) |
+| Synthetic evaluation dataset | Verified | [12-case contact sheet](synthetic-dataset-contact-sheet.jpg) and `test-fixtures/synthetic/manifest.json` |

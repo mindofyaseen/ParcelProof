@@ -74,3 +74,12 @@ Factual development record for the AWS Zero to Shipped submission. Public eviden
 - Result: Reworked the hero around a single premium focal asset, stronger commercial copy, restrained verification overlays, cleaner spacing, and responsive scale. Production desktop and 390 px mobile screenshots contain no runtime error banner.
 - Quality gate: lint, typecheck, 12 unit/infrastructure tests, production build, live Playwright CTA/order workflow, and AWS deployment pass. Stack status is `UPDATE_COMPLETE`.
 - Evidence: `docs/evidence/ui-v3-desktop.png` and `docs/evidence/ui-v3-mobile.png`.
+
+## 2026-10-01 21:02 PKT — Diverse synthetic evaluation dataset
+
+- Goal: Build controlled, realistic evaluation evidence without using or claiming real customer data.
+- Agent action: Used the built-in ImageGen workflow to create distinct packing photographs across nine merchant segments. A repetitive first pass was deliberately curated down to 12 cases with only four mug scenarios and eight materially different product/quality scenarios.
+- Coverage: two expected `PASS`, seven expected `BLOCK`, and three expected `REVIEW` cases; correct parcels, color/quantity/personalization mismatches, missing items, glare, shallow focus, and underexposure.
+- Provenance: Every record is marked synthetic; the manifest declares that it contains no customer data. Pseudonymous order references exist only to make the fixtures operationally realistic.
+- Validation: `npm run test:data` verifies the 12–20 case bound, unique IDs/files, allowed outcome labels, provenance flags, and the existence of every referenced image.
+- Evidence: `test-fixtures/synthetic/manifest.json`, dataset README, and `docs/evidence/synthetic-dataset-contact-sheet.jpg`.

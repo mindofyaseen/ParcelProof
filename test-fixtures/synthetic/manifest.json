@@ -1,0 +1,118 @@
+{
+  "dataset": "ParcelProof Synthetic Dispatch Evaluation v1",
+  "version": "1.0.0",
+  "createdAt": "2026-10-01",
+  "synthetic": true,
+  "containsCustomerData": false,
+  "purpose": "Controlled visual evaluation of PASS, BLOCK, and REVIEW behavior across realistic small-seller packing scenarios.",
+  "cases": [
+    {
+      "id": "PP-SYN-003",
+      "file": "03-mug-correct-ayesha.png",
+      "merchantSegment": "Personalised gifts",
+      "orderRef": "SYN-GIFT-1003",
+      "expectedOrder": { "items": ["blue mug", "chocolate bar", "greeting card: Happy Birthday Ayesha"] },
+      "failureMode": "none; alternate lighting and composition",
+      "expectedStatus": "PASS"
+    },
+    {
+      "id": "PP-SYN-004",
+      "file": "04-mug-wrong-red.png",
+      "merchantSegment": "Personalised gifts",
+      "orderRef": "SYN-GIFT-1004",
+      "expectedOrder": { "items": ["blue mug", "chocolate bar", "greeting card: Happy Birthday Ayesha"] },
+      "failureMode": "wrong color variant",
+      "expectedStatus": "BLOCK"
+    },
+    {
+      "id": "PP-SYN-007",
+      "file": "07-mug-duplicate-quantity.png",
+      "merchantSegment": "Personalised gifts",
+      "orderRef": "SYN-GIFT-1007",
+      "expectedOrder": { "items": ["one blue mug", "one chocolate bar", "one greeting card: Happy Birthday Ayesha"] },
+      "failureMode": "excess quantity",
+      "expectedStatus": "BLOCK"
+    },
+    {
+      "id": "PP-SYN-009",
+      "file": "09-mug-near-spelling-ayeshah.png",
+      "merchantSegment": "Personalised gifts",
+      "orderRef": "SYN-GIFT-1009",
+      "expectedOrder": { "items": ["blue mug", "chocolate bar", "greeting card: Happy Birthday Ayesha"] },
+      "failureMode": "near-spelling personalization mismatch",
+      "expectedStatus": "BLOCK"
+    },
+    {
+      "id": "PP-SYN-010",
+      "file": "10-skincare-hamper-correct.png",
+      "merchantSegment": "Beauty hampers",
+      "orderRef": "SYN-BEAUTY-2010",
+      "expectedOrder": { "items": ["amber candle", "lavender soap", "botanical lotion", "card: Thank You Priya"] },
+      "failureMode": "none",
+      "expectedStatus": "PASS"
+    },
+    {
+      "id": "PP-SYN-011",
+      "file": "11-hoodie-wrong-embroidery.png",
+      "merchantSegment": "Personalised apparel",
+      "orderRef": "SYN-APPAREL-3011",
+      "expectedOrder": { "items": ["black hoodie", "size M", "embroidery: NOOR"] },
+      "failureMode": "embroidered name mismatch: NORA",
+      "expectedStatus": "BLOCK"
+    },
+    {
+      "id": "PP-SYN-012",
+      "file": "12-baby-gift-missing-rabbit.png",
+      "merchantSegment": "Baby gifts",
+      "orderRef": "SYN-BABY-4012",
+      "expectedOrder": { "items": ["mint knitted blanket", "wooden plaque: LUCA", "plush rabbit"] },
+      "failureMode": "missing plush rabbit",
+      "expectedStatus": "BLOCK"
+    },
+    {
+      "id": "PP-SYN-013",
+      "file": "13-wedding-favour-quantity-short.png",
+      "merchantSegment": "Wedding favours",
+      "orderRef": "SYN-WEDDING-5013",
+      "expectedOrder": { "items": ["two miniature honey jars", "dried flower sprig"] },
+      "failureMode": "quantity short by one jar",
+      "expectedStatus": "BLOCK"
+    },
+    {
+      "id": "PP-SYN-014",
+      "file": "14-pet-collar-wrong-colour.png",
+      "merchantSegment": "Pet accessories",
+      "orderRef": "SYN-PET-6014",
+      "expectedOrder": { "items": ["red dog collar", "gold tag: MILO"] },
+      "failureMode": "wrong blue color variant",
+      "expectedStatus": "BLOCK"
+    },
+    {
+      "id": "PP-SYN-015",
+      "file": "15-stationery-glare-review.png",
+      "merchantSegment": "Luxury stationery",
+      "orderRef": "SYN-STATIONERY-7015",
+      "expectedOrder": { "items": ["navy notebook: AK", "gold pen", "cream note card"] },
+      "failureMode": "glare obscures personalization",
+      "expectedStatus": "REVIEW"
+    },
+    {
+      "id": "PP-SYN-016",
+      "file": "16-jewellery-shallow-focus-review.png",
+      "merchantSegment": "Personalised jewellery",
+      "orderRef": "SYN-JEWEL-8016",
+      "expectedOrder": { "items": ["silver bracelet", "engraved name plate"] },
+      "failureMode": "shallow focus makes engraving unreadable",
+      "expectedStatus": "REVIEW"
+    },
+    {
+      "id": "PP-SYN-017",
+      "file": "17-wooden-ornament-underexposed-review.png",
+      "merchantSegment": "Seasonal gifts",
+      "orderRef": "SYN-SEASONAL-9017",
+      "expectedOrder": { "items": ["personalized wooden ornament", "twine", "gift tag"] },
+      "failureMode": "underexposure hides engraved name",
+      "expectedStatus": "REVIEW"
+    }
+  ]
+}

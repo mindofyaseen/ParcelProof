@@ -36,3 +36,7 @@ npm run deploy
 ```
 
 See [the execution checklist](docs/EXECUTION_CHECKLIST.md) and [evidence index](docs/evidence/EVIDENCE_INDEX.md).
+
+## Synthetic evaluation data
+
+`test-fixtures/synthetic` contains a validated 12-image realistic synthetic dataset across personalised gifts, beauty, apparel, baby gifts, wedding favours, pet accessories, stationery, jewellery, and seasonal products. Run `npm run test:data` to validate provenance, files, unique identifiers, and expected outcomes.
