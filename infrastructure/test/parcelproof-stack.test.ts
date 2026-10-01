@@ -35,6 +35,12 @@ describe('ParcelProof infrastructure', () => {
     synthesized.hasResourceProperties('AWS::ApiGatewayV2::Route', {
       RouteKey: 'GET /health'
     });
+    synthesized.hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      RouteKey: 'POST /orders/{orderId}/inspections'
+    });
+    synthesized.hasResourceProperties('AWS::ApiGatewayV2::Stage', {
+      DefaultRouteSettings: { ThrottlingBurstLimit: 20, ThrottlingRateLimit: 10 }
+    });
     expect(synthesized.findOutputs('*')).toHaveProperty('SiteUrl');
     expect(synthesized.findOutputs('*')).toHaveProperty('HealthUrl');
   });

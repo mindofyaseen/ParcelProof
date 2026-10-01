@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "npm run dev --workspace @parcelproof/web",
     "lint": "eslint .",
-    "typecheck": "npm run typecheck --workspaces --if-present",
+    "typecheck": "npm run build --workspace @parcelproof/shared && npm run typecheck --workspaces --if-present",
     "test": "npm run build --workspace @parcelproof/web && vitest run",
     "test:e2e": "playwright test",
     "build": "npm run build --workspace @parcelproof/shared && npm run build --workspace @parcelproof/api && npm run build --workspace @parcelproof/web && npm run build --workspace @parcelproof/infrastructure",

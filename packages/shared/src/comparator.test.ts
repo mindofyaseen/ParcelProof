@@ -86,4 +86,13 @@ describe('comparePackingInspection', () => {
 
     expect(comparePackingInspection(order, nearMatch).status).toBe('BLOCK');
   });
+
+  it('uses only explicit supported aliases when matching item labels', () => {
+    const aliased: PackingObservation = {
+      ...correctObservation,
+      observedItems: correctObservation.observedItems.map((item) => item.label === 'greeting card' ? { ...item, label: 'birthday card' } : item)
+    };
+
+    expect(comparePackingInspection(order, aliased).status).toBe('PASS');
+  });
 });

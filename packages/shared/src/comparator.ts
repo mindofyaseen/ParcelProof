@@ -30,6 +30,14 @@ function normalizedKey(value: string): string {
   return normalize(value).toLocaleLowerCase('en');
 }
 
+function canonicalItem(value: string): string {
+  const key = normalizedKey(value);
+  if (['cup'].includes(key) || /\bmug\b/.test(key)) return 'mug';
+  if (/\bcard\b/.test(key)) return 'greeting card';
+  if (/\bchocolate\b/.test(key)) return 'chocolate bar';
+  return key;
+}
+
 export function comparePackingInspection(
   order: Order,
   observation: PackingObservation,
@@ -52,7 +60,7 @@ export function comparePackingInspection(
 
   for (const requirement of order.requirements) {
     const observed = observation.observedItems.find(
-      (item) => normalizedKey(item.label) === normalizedKey(requirement.item)
+      (item) => canonicalItem(item.label) === canonicalItem(requirement.item)
     );
     const requirementLabel = `${requirement.item} ×${requirement.quantity}`;
 

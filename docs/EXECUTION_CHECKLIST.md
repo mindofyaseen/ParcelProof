@@ -18,8 +18,17 @@
 - [x] Bootstrap/deploy the AWS stack.
 - [x] Verify public CloudFront and API URLs externally; record evidence.
 
-## Next milestone — constrained Phase 2 vertical slice
+## Phase 2 — constrained vertical slice
 
 - [x] Implement the deterministic comparator with tests first.
-- [ ] Implement orders, private uploads, Bedrock observations, and history.
-- [ ] Prove wrong parcel `BLOCK`, corrected parcel `PASS` or safe `REVIEW`, and ambiguous photo `REVIEW`.
+- [x] Implement orders, private uploads, Bedrock observations, and history.
+- [x] Prove wrong parcel `BLOCK`, corrected parcel `PASS`, and invalid model output safely degrades to `REVIEW`.
+- [x] Add client/server file validation, API throttling, and forced structured Bedrock output.
+- [x] Verify the production CTA and upload workflow with Chromium.
+
+## Phase 3 — evaluation and submission
+
+- [x] Preserve controlled wrong/corrected fixtures and live-flow evidence.
+- [x] Record model variability honestly instead of claiming perfect accuracy.
+- [x] Add a browser smoke test and final quality gates.
+- [ ] Record a short submission demo video and complete the hackathon submission form (manual owner task).

@@ -46,3 +46,14 @@ Factual development record for the AWS Zero to Shipped submission. Public eviden
 - Result: 9 tests pass across API, policy, and infrastructure suites. Type checking passes.
 - Evidence: Repository test output and commit history.
 - Decision/next step: Build order persistence, private presigned upload, observation validation, and inspection orchestration around the tested policy.
+
+## 2026-10-01 15:18 PKT — Production vertical slice and premium judge UI
+
+- Goal: Ship the complete brief-defined workflow without adding auth, payments, or unrelated features.
+- Agent action: Rebuilt the public experience around the judge path; implemented order persistence, private presigned uploads, Bedrock Converse observation, strict Zod validation, deterministic comparison, correction history, responsive states, API throttling, and stored-object size/type validation.
+- AWS services/API calls: API Gateway, Lambda, DynamoDB, S3, Bedrock, CloudFront, CloudFormation.
+- Result: The stack reached `UPDATE_COMPLETE`. A live Chromium test created an order and reached the private upload control. The wrong fixture produced `BLOCK` in the latest run; the corrected fixture has produced `PASS` and a two-inspection history. One earlier model-structure run returned safe `REVIEW`, which is retained as honest evidence of probabilistic variability.
+- Problems found and fixed: CDK reserved concurrency could not be updated during the same Lambda operation and was removed; signed upload headers initially made browser PUTs fail and were reduced to the required content type; unconstrained JSON output was replaced with a forced Bedrock tool schema plus one explicit retry; item aliases were bounded to canonical mug/card/chocolate labels; runtime config loading now retries on the first action and surfaces pre-order failures.
+- Evidence: [Phase 2 live flow](docs/evidence/phase-2-live-flow.md), controlled fixtures, and `docs/evidence/live-judge-workflow.png`.
+- Quality gate: lint, typecheck, production build, CDK synth, 12 tests across four suites, and live Chromium smoke test pass.
+- Decision/next step: Keep the MVP frozen to the brief. Remaining submission work is the manual demo recording and hackathon form.

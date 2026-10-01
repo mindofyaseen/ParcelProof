@@ -9,6 +9,7 @@
     "typecheck": "tsc -b --pretty false"
   },
   "dependencies": {
+    "@parcelproof/shared": "0.1.0",
     "@vitejs/plugin-react": "latest",
     "vite": "latest",
     "react": "latest",
@@ -19,4 +20,3 @@
     "@types/react-dom": "latest"
   }
 }
-
