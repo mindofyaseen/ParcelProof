@@ -1,0 +1,27 @@
+{
+  "name": "parcelproof",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": ["apps/*", "packages/*", "infrastructure"],
+  "scripts": {
+    "dev": "npm run dev --workspace @parcelproof/web",
+    "lint": "eslint .",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run build --workspace @parcelproof/web && vitest run",
+    "test:e2e": "playwright test",
+    "build": "npm run build --workspace @parcelproof/shared && npm run build --workspace @parcelproof/api && npm run build --workspace @parcelproof/web && npm run build --workspace @parcelproof/infrastructure",
+    "cdk:synth": "npm run build && cdk synth --app \"node infrastructure/dist/app.js\"",
+    "deploy": "npm run build && cdk deploy --app \"node infrastructure/dist/app.js\" --require-approval never --outputs-file cdk-outputs.json"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.36.0",
+    "@playwright/test": "^1.55.1",
+    "@types/node": "^24.5.2",
+    "eslint": "^9.36.0",
+    "globals": "^16.4.0",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.44.1",
+    "vitest": "^3.2.4"
+  }
+}
