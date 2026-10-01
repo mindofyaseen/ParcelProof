@@ -91,3 +91,12 @@ Factual development record for the AWS Zero to Shipped submission. Public eviden
 - Result: All technical ship-gate items are documented as complete. The remaining owner-only actions are recording/hosting the demo video, previewing and publishing the Builder Center project, and saving the confirmation. The official current lane tag is recorded as singular `#startup`.
 - Domain decision: Keep the verified CloudFront URL for the deadline. A custom hostname is optional and requires control of a registered domain or delegated subdomain; it will not block submission.
 - Evidence: `docs/submission/` and the updated repository README.
+
+## 2026-10-01 21:29 PKT — Official-style AWS agent connection re-verification
+
+- Goal: Strengthen the public coding-agent proof against AWS Builder Center's current Agent Toolkit connection guide.
+- Agent action: Confirmed the registered managed `aws-mcp` transport, then launched fresh ephemeral Codex runs that were explicitly prohibited from using the AWS CLI or shell for AWS access. The agent invoked the MCP Regions tool and a separate read-only STS identity call.
+- AWS services/API calls: `ListRegions`; `sts:GetCallerIdentity`.
+- Result: The MCP Regions call returned 34 available Regions including `us-east-1`. The account-scoped identity call succeeded; account ID, user ID, and ARN were deliberately discarded. No AWS write operation was requested.
+- Troubleshooting: A first strict read-only nested session cancelled the general MCP script at its approval boundary after Regions had succeeded. An approval-aware retry completed the same read-only identity check. This tooling boundary is documented rather than hidden.
+- Evidence: [AWS coding-agent connection proof](docs/evidence/aws-mcp-connection.md).

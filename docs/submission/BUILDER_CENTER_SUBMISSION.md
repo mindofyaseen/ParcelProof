@@ -110,7 +110,7 @@ Codex then helped me:
 - validate the public flow in Chromium at desktop and mobile sizes;
 - preserve a timestamped build log and redacted evidence index.
 
-The connection proof and troubleshooting record are public in the repository without credentials, account IDs, or full resource identifiers.
+The connection proof and troubleshooting record are public in the repository without credentials, account IDs, or full resource identifiers: https://github.com/mindofyaseen/ParcelProof/blob/main/docs/evidence/aws-mcp-connection.md
 
 ## What broke—and why that improved the product
 
@@ -156,4 +156,5 @@ ParcelProof is intentionally a bounded product: one order, one private photo, vi
 - **Live app:** https://d1ia8x26lvtay4.cloudfront.net
 - **Repository:** https://github.com/mindofyaseen/ParcelProof
 - **Evidence index:** https://github.com/mindofyaseen/ParcelProof/blob/main/docs/evidence/EVIDENCE_INDEX.md
+- **AWS coding-agent proof:** https://github.com/mindofyaseen/ParcelProof/blob/main/docs/evidence/aws-mcp-connection.md
 - **Build log:** https://github.com/mindofyaseen/ParcelProof/blob/main/BUILD_LOG.md

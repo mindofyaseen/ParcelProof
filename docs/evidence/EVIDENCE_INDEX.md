@@ -4,8 +4,10 @@ Only completed, reproducible evidence is marked verified.
 
 | Evidence | Status | Location |
 | --- | --- | --- |
-| AWS MCP registration and read-only calls | Verified | [AWS MCP connection](aws-mcp-connection.md) |
-| Bedrock model discovery | Verified | [AWS MCP connection](aws-mcp-connection.md) |
+| AWS coding-agent/MCP registration | Verified | [Reproducible connection proof](aws-mcp-connection.md) |
+| AWS-recommended Regions connection check | Verified | 34 Regions returned through `aws-mcp`; `us-east-1` present |
+| Redacted account-scoped read-only call | Verified | `sts:GetCallerIdentity` succeeded through a fresh Codex run; identifiers discarded |
+| Bedrock model discovery | Verified | [Connection proof and model metadata](aws-mcp-connection.md) |
 | Automated quality gates | Verified | 12 tests across four suites; lint, typecheck, build, CDK synth, and live Chromium smoke test passed |
 | CloudFormation deployment | Verified | [Phase 1 deployment](phase-1-deployment.md) |
 | Public CloudFront application | Verified | [Live application](https://d1ia8x26lvtay4.cloudfront.net) |
