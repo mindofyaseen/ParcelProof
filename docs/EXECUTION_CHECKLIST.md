@@ -31,4 +31,5 @@
 - [x] Preserve controlled wrong/corrected fixtures and live-flow evidence.
 - [x] Record model variability honestly instead of claiming perfect accuracy.
 - [x] Add a browser smoke test and final quality gates.
-- [ ] Record a short submission demo video and complete the hackathon submission form (manual owner task).
+- [x] Prepare judge-focused README, Builder Center Markdown, cover artwork, demo script, and publish checklist.
+- [ ] Record a short submission demo video and publish/submit the Builder Center project (manual owner task).

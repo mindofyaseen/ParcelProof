@@ -17,3 +17,4 @@ Only completed, reproducible evidence is marked verified.
 | Skill-led UI v3 — desktop | Verified | [Screenshot](ui-v3-desktop.png) |
 | Skill-led UI v3 — mobile | Verified | [Screenshot](ui-v3-mobile.png) |
 | Synthetic evaluation dataset | Verified | [12-case contact sheet](synthetic-dataset-contact-sheet.jpg) and `test-fixtures/synthetic/manifest.json` |
+| Builder Center submission package | Prepared | [`docs/submission`](../submission/) — form copy, Markdown article, cover artwork, demo script, and final checklist |

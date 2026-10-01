@@ -83,3 +83,11 @@ Factual development record for the AWS Zero to Shipped submission. Public eviden
 - Provenance: Every record is marked synthetic; the manifest declares that it contains no customer data. Pseudonymous order references exist only to make the fixtures operationally realistic.
 - Validation: `npm run test:data` verifies the 12–20 case bound, unique IDs/files, allowed outcome labels, provenance flags, and the existence of every referenced image.
 - Evidence: `test-fixtures/synthetic/manifest.json`, dataset README, and `docs/evidence/synthetic-dataset-contact-sheet.jpg`.
+
+## 2026-10-01 21:24 PKT — Submission audit and judge package
+
+- Goal: Convert the shipped product and factual evidence into a complete Builder Center submission without expanding the MVP.
+- Agent action: Rechecked the official form and hackathon requirements, audited the repository against the master brief, expanded the README for judges, removed an unmeasured `98%` hero claim, prepared exact form copy and long-form Markdown, generated a text-free 1200 × 675 cover, and wrote a 60–90 second demo script plus final publish checklist.
+- Result: All technical ship-gate items are documented as complete. The remaining owner-only actions are recording/hosting the demo video, previewing and publishing the Builder Center project, and saving the confirmation. The official current lane tag is recorded as singular `#startup`.
+- Domain decision: Keep the verified CloudFront URL for the deadline. A custom hostname is optional and requires control of a registered domain or delegated subdomain; it will not block submission.
+- Evidence: `docs/submission/` and the updated repository README.

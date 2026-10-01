@@ -1,5 +1,6 @@
 import { access, readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import { stdout } from 'node:process';
 
 const root = resolve('test-fixtures/synthetic');
 const manifest = JSON.parse(await readFile(resolve(root, 'manifest.json'), 'utf8'));
@@ -23,4 +24,4 @@ for (const entry of manifest.cases) {
 }
 
 const counts = Object.fromEntries([...statuses].map((status) => [status, manifest.cases.filter((entry) => entry.expectedStatus === status).length]));
-console.log(`Validated ${manifest.cases.length} synthetic cases`, counts);
+stdout.write(`Validated ${manifest.cases.length} synthetic cases ${JSON.stringify(counts)}\n`);
