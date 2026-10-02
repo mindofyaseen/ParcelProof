@@ -4,7 +4,7 @@
 
 ParcelProof is a visual dispatch-control workflow for small sellers of personalised and visually variable products. Amazon Bedrock observes a private packing photo; validated, deterministic TypeScript policy decides whether the parcel is safe to ship, must be blocked, or needs human review.
 
-[Open the live AWS application](https://d1ia8x26lvtay4.cloudfront.net) · [Check API health](https://ebuk0g78lb.execute-api.us-east-1.amazonaws.com/health) · [View the evidence index](docs/evidence/EVIDENCE_INDEX.md)
+[Open the live AWS application](https://d1ia8x26lvtay4.cloudfront.net) · [Check API health](https://ebuk0g78lb.execute-api.us-east-1.amazonaws.com/health) · [View the evidence](EVIDENCE.md)
 
 ![ParcelProof live product](docs/evidence/ui-v3-desktop.png)
 
@@ -14,7 +14,7 @@ No account or setup is required.
 
 1. Open the [live application](https://d1ia8x26lvtay4.cloudfront.net).
 2. Select **Run the demo order** to load the blue mug, chocolate bar, greeting card, and exact `Happy Birthday Ayesha` requirement.
-3. Upload a JPG, PNG, or WebP packing photo (maximum 8 MB).
+3. Choose one of the included realistic synthetic demo photos, or upload a JPG, PNG, or WebP packing photo (maximum 8 MB).
 4. Review the evidence-backed `PASS`, `REVIEW`, or `BLOCK` result.
 5. If blocked, correct the parcel and inspect again; the recovery trail remains in the order history.
 
@@ -84,7 +84,7 @@ Verified evidence includes:
 - A Playwright production smoke test for the no-login judge flow.
 - Desktop and 390 px mobile visual verification.
 
-See [the evidence index](docs/evidence/EVIDENCE_INDEX.md), [build log](BUILD_LOG.md), and [synthetic dataset documentation](test-fixtures/synthetic/README.md). Expected fixture labels are not claimed as measured model accuracy.
+See the stable [evidence entry point](EVIDENCE.md), [complete evidence index](docs/evidence/EVIDENCE_INDEX.md), [build log](BUILD_LOG.md), and [synthetic dataset documentation](test-fixtures/synthetic/README.md). Expected fixture labels are not claimed as measured model accuracy.
 
 ## Local development
 

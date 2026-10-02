@@ -100,3 +100,11 @@ Factual development record for the AWS Zero to Shipped submission. Public eviden
 - Result: The MCP Regions call returned 34 available Regions including `us-east-1`. The account-scoped identity call succeeded; account ID, user ID, and ARN were deliberately discarded. No AWS write operation was requested.
 - Troubleshooting: A first strict read-only nested session cancelled the general MCP script at its approval boundary after Regions had succeeded. An approval-aware retry completed the same read-only identity check. This tooling boundary is documented rather than hidden.
 - Evidence: [AWS coding-agent connection proof](docs/evidence/aws-mcp-connection.md).
+
+## 2026-10-02 16:12 PKT — Public judge test data and stable evidence URL
+
+- Goal: Remove friction from the published judge flow and replace a fragile deep evidence link with a simple repository-root entry point.
+- Agent action: Added three one-click, realistic synthetic packing fixtures to the live workflow: a wrong parcel, corrected parcel, and deliberately unclear photo. Added explicit non-customer-data provenance, public thumbnails, selected-file feedback, a root `EVIDENCE.md`, and an updated production browser test.
+- Result: All three WebP assets return HTTP 200 from CloudFront. The deployed interface lets a judge select the wrong parcel without downloading or preparing a file. Production Playwright verification passes. The original GitHub evidence URL was independently confirmed public and reachable; the root evidence link is provided as a simpler replacement for the Builder Center article.
+- Quality gate: lint, typecheck, production build, 12 unit/API/infrastructure tests, 12-case dataset validation, and production Playwright smoke test pass.
+- Evidence: `EVIDENCE.md`, `apps/web/public/demo-data/`, and `docs/evidence/public-demo-data.png`.

@@ -61,7 +61,7 @@ ParcelProof compares a structured order with one packing photo and returns one o
 The judge flow requires no account:
 
 1. Select **Run the demo order**.
-2. Upload a JPG, PNG, or WebP packing photo.
+2. Choose an included realistic demo photo or upload a JPG, PNG, or WebP packing photo.
 3. See requirement-by-requirement evidence, confidence, and the final policy result.
 4. Correct a blocked parcel and inspect it again.
 5. See the full recovery trail retained against the same order.
@@ -155,6 +155,6 @@ ParcelProof is intentionally a bounded product: one order, one private photo, vi
 
 - **Live app:** https://d1ia8x26lvtay4.cloudfront.net
 - **Repository:** https://github.com/mindofyaseen/ParcelProof
-- **Evidence index:** https://github.com/mindofyaseen/ParcelProof/blob/main/docs/evidence/EVIDENCE_INDEX.md
+- **Evidence:** https://github.com/mindofyaseen/ParcelProof/blob/main/EVIDENCE.md
 - **AWS coding-agent proof:** https://github.com/mindofyaseen/ParcelProof/blob/main/docs/evidence/aws-mcp-connection.md
 - **Build log:** https://github.com/mindofyaseen/ParcelProof/blob/main/BUILD_LOG.md

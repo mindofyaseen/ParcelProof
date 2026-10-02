@@ -7,6 +7,12 @@ type Inspection = { inspectionId: string; status: Status; comparison: { checks: 
 
 const demoPayload = { customerAlias: 'Ayesha', requirements: [{ item: 'mug', quantity: 1, variant: 'blue' }, { item: 'chocolate bar', quantity: 1 }, { item: 'greeting card', quantity: 1, personalization: 'Happy Birthday Ayesha' }] };
 
+const demoSamples = [
+  { id: 'block', name: 'Wrong parcel', detail: 'Red mug and Alisha card', expected: 'BLOCK', path: '/demo-data/wrong-parcel.webp', fileName: 'parcelproof-wrong-parcel.webp' },
+  { id: 'pass', name: 'Corrected parcel', detail: 'Blue mug and Ayesha card', expected: 'PASS', path: '/demo-data/corrected-parcel.webp', fileName: 'parcelproof-corrected-parcel.webp' },
+  { id: 'review', name: 'Unclear photo', detail: 'Motion blur and strong glare', expected: 'REVIEW', path: '/demo-data/unclear-parcel.webp', fileName: 'parcelproof-unclear-parcel.webp' }
+] as const;
+
 async function getApiUrl() {
   const response = await fetch('/config.json', { cache: 'no-store' });
   if (!response.ok) throw new Error('App configuration is unavailable');
@@ -20,6 +26,7 @@ export function App() {
   const [inspection, setInspection] = useState<Inspection | null>(null);
   const [history, setHistory] = useState<Inspection[]>([]);
   const [busy, setBusy] = useState(false);
+  const [loadingSample, setLoadingSample] = useState('');
   const [error, setError] = useState('');
   const [dragging, setDragging] = useState(false);
   const [tilt, setTilt] = useState({ x: -4, y: 7 });
@@ -37,13 +44,24 @@ export function App() {
   }
 
   async function startDemo() {
-    setBusy(true); setError(''); setInspection(null); setHistory([]); setFile(null);
+    setBusy(true); setError(''); setInspection(null); setHistory([]); setFile(null); setLoadingSample('');
     try {
       const created = await api<Order>('/orders', { method: 'POST', body: JSON.stringify(demoPayload) });
       setOrder(created);
       setTimeout(() => workflowRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Could not create the demo order'); }
     finally { setBusy(false); }
+  }
+
+  async function chooseDemoSample(sample: typeof demoSamples[number]) {
+    setLoadingSample(sample.id); setError('');
+    try {
+      const response = await fetch(sample.path, { cache: 'force-cache' });
+      if (!response.ok) throw new Error('The demo photo could not be loaded.');
+      const blob = await response.blob();
+      setFile(new File([blob], sample.fileName, { type: blob.type || 'image/webp' }));
+    } catch (cause) { setError(cause instanceof Error ? cause.message : 'The demo photo could not be loaded.'); }
+    finally { setLoadingSample(''); }
   }
 
   async function inspect() {
@@ -85,7 +103,10 @@ export function App() {
     {error && !order && <div className="errorBanner globalError"><b>Couldn’t connect safely.</b><span>{error}</span><button onClick={() => setError('')}>Dismiss</button></div>}
 
     {order && <section className="workflow" ref={workflowRef} aria-live="polite"><div className="workflowHeader"><div><p className="eyebrow">Live judge workflow</p><h2>{order.displayNumber}</h2><p>Birthday gift box for {order.customerAlias}</p></div><button className="resetButton" onClick={startDemo} disabled={busy}>Reset demo</button></div><div className="workspaceGrid"><div className="requirementsPanel"><div className="panelTitle"><span>01</span><div><h3>What should be packed</h3><p>Exact requirements from the order</p></div></div><div className="requirements">{order.requirements.map((req) => <div className="requirement" key={req.item}><span className="checkMark">✓</span><div><strong>{req.item}</strong><small>{req.variant ? `${req.variant} · ` : ''}Quantity {req.quantity}{req.personalization ? ` · “${req.personalization}”` : ''}</small></div></div>)}</div><div className="privacyNote"><span>⌁</span><p><strong>Private by design</strong><br/>The browser uploads directly to encrypted S3 using a five-minute link.</p></div></div>
-      <div className="uploadPanel"><div className="panelTitle"><span>02</span><div><h3>Show us the packed order</h3><p>JPG, PNG, or WebP · maximum 8 MB</p></div></div><label className={`dropZone ${dragging ? 'dragging' : ''} ${file ? 'hasFile' : ''}`} onDragOver={(event) => { event.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={(event) => { event.preventDefault(); setDragging(false); setFile(event.dataTransfer.files[0] ?? null); }}><input type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => setFile(event.target.files?.[0] ?? null)} /><span className="uploadIcon">↑</span><strong>{file ? file.name : 'Drop a clear packing photo here'}</strong><small>{file ? `${(file.size / 1024 / 1024).toFixed(2)} MB · ready to inspect` : 'or click to choose a photo'}</small></label><button className="inspectButton" disabled={!file || busy} onClick={inspect}>{busy ? 'Inspecting visible evidence…' : inspection ? 'Inspect corrected parcel' : 'Inspect this parcel'} <span>→</span></button><p className="limitText">Only visible evidence is checked. Hidden, sealed, or obscured items require human review.</p></div></div>
+      <div className="uploadPanel"><div className="panelTitle"><span>02</span><div><h3>Show us the packed order</h3><p>Choose a realistic demo photo or upload your own</p></div></div>
+        <div className="samplePicker"><div className="sampleIntro"><strong>Test data included</strong><small>Realistic synthetic fixtures · no customer data</small></div><div className="sampleGrid">{demoSamples.map((sample) => <button type="button" key={sample.id} className={file?.name === sample.fileName ? 'selected' : ''} onClick={() => chooseDemoSample(sample)} disabled={busy || loadingSample !== ''}><img src={sample.path} alt="" /><span><b>{loadingSample === sample.id ? 'Loading…' : sample.name}</b><small>{sample.detail}</small><i className={`sampleOutcome outcome-${sample.id}`}>Expected {sample.expected}</i></span></button>)}</div></div>
+        <div className="orDivider"><span>or use your own photo</span></div>
+        <label className={`dropZone ${dragging ? 'dragging' : ''} ${file ? 'hasFile' : ''}`} onDragOver={(event) => { event.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={(event) => { event.preventDefault(); setDragging(false); setFile(event.dataTransfer.files[0] ?? null); }}><input type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => setFile(event.target.files?.[0] ?? null)} /><span className="uploadIcon">↑</span><strong>{file ? file.name : 'Drop a clear packing photo here'}</strong><small>{file ? `${(file.size / 1024 / 1024).toFixed(2)} MB · ready to inspect` : 'JPG, PNG, or WebP · maximum 8 MB'}</small></label><button className="inspectButton" disabled={!file || busy} onClick={inspect}>{busy ? 'Inspecting visible evidence…' : inspection ? 'Inspect corrected parcel' : 'Inspect this parcel'} <span>→</span></button><p className="limitText">Only visible evidence is checked. Hidden, sealed, or obscured items require human review.</p></div></div>
       {error && <div className="errorBanner"><b>Couldn’t complete that safely.</b><span>{error}</span><button onClick={() => setError('')}>Dismiss</button></div>}
       {inspection && statusCopy && <section className={`resultPanel status-${inspection.status.toLowerCase()}`}><div className="resultHero"><span className="resultIcon">{inspection.status === 'PASS' ? '✓' : inspection.status === 'BLOCK' ? '!' : '?'}</span><div><p>INSPECTION RESULT</p><h2>{statusCopy[0]}</h2><span>{statusCopy[1]}</span></div><div className="latency">{(inspection.latencyMs / 1000).toFixed(1)}s<small>inspection</small></div></div>{inspection.comparison.reasons.length > 0 && <div className="reasonList">{inspection.comparison.reasons.map((reason) => <p key={reason}>• {reason}</p>)}</div>}{inspection.comparison.checks.length > 0 && <div className="resultTable"><div className="resultRow head"><span>Requirement</span><span>Expected</span><span>Observed</span><span>Result</span></div>{inspection.comparison.checks.map((check, index) => <div className="resultRow" key={`${check.kind}-${index}`}><span><b>{check.requirement}</b><small>{check.kind.toLowerCase()}</small></span><span>{check.expected}</span><span>{check.observed}</span><span><i className={`chip ${check.result.toLowerCase()}`}>{check.result}</i>{check.confidence !== undefined && <small>{Math.round(check.confidence * 100)}% confidence</small>}</span></div>)}</div>}{inspection.status !== 'PASS' && <div className="correctAction"><div><strong>Correct the parcel, then inspect again.</strong><p>The next inspection stays linked to this order so judges can see the full recovery trail.</p></div><button onClick={() => document.querySelector<HTMLInputElement>('.dropZone input')?.click()}>Choose corrected photo</button></div>}</section>}
       {history.length > 0 && <section className="historyPanel"><div><p className="eyebrow">Evidence trail</p><h3>Inspection history</h3></div><div className="timeline">{history.map((item, index) => <div className="historyItem" key={item.inspectionId}><span>{history.length - index}</span><div><strong>{item.status === 'PASS' ? 'Ready to ship' : item.status === 'BLOCK' ? 'Shipment blocked' : 'Human review needed'}</strong><small>{new Date(item.createdAt).toLocaleString()} · {(item.latencyMs / 1000).toFixed(1)}s</small></div><i className={`chip ${item.status.toLowerCase()}`}>{item.status}</i></div>)}</div></section>}</section>}

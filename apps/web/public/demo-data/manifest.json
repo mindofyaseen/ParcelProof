@@ -1,0 +1,23 @@
+{
+  "dataset": "ParcelProof Public Judge Demo",
+  "version": "1.0.0",
+  "synthetic": true,
+  "containsCustomerData": false,
+  "cases": [
+    {
+      "file": "wrong-parcel.webp",
+      "scenario": "wrong variant and personalised name",
+      "expectedStatus": "BLOCK"
+    },
+    {
+      "file": "corrected-parcel.webp",
+      "scenario": "all visible requirements satisfied",
+      "expectedStatus": "PASS"
+    },
+    {
+      "file": "unclear-parcel.webp",
+      "scenario": "motion blur, glare, and unreadable personalisation",
+      "expectedStatus": "REVIEW"
+    }
+  ]
+}
