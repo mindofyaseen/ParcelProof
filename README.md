@@ -8,12 +8,14 @@ ParcelProof is a visual dispatch-control workflow for small sellers of personali
 
 ![ParcelProof live product](docs/evidence/ui-v3-desktop.png)
 
+The current product also supports [custom order contracts](docs/evidence/product-v4-custom-order.png) and downloadable inspection reports.
+
 ## Try the judge demo
 
 No account or setup is required.
 
 1. Open the [live application](https://d1ia8x26lvtay4.cloudfront.net).
-2. Select **Run the demo order** to load the blue mug, chocolate bar, greeting card, and exact `Happy Birthday Ayesha` requirement.
+2. Select **Inspect a demo parcel** to load the blue mug, chocolate bar, greeting card, and exact `Happy Birthday Ayesha` requirement, or choose **Create custom order** to define your own contract.
 3. Choose one of the included realistic synthetic demo photos, or upload a JPG, PNG, or WebP packing photo (maximum 8 MB).
 4. Review the evidence-backed `PASS`, `REVIEW`, or `BLOCK` result.
 5. If blocked, correct the parcel and inspect again; the recovery trail remains in the order history.
@@ -84,7 +86,7 @@ Verified evidence includes:
 - A Playwright production smoke test for the no-login judge flow.
 - Desktop and 390 px mobile visual verification.
 
-See the stable [evidence entry point](EVIDENCE.md), [complete evidence index](docs/evidence/EVIDENCE_INDEX.md), [build log](BUILD_LOG.md), and [synthetic dataset documentation](test-fixtures/synthetic/README.md). Expected fixture labels are not claimed as measured model accuracy.
+See the stable [evidence entry point](EVIDENCE.md), [complete evidence index](docs/evidence/EVIDENCE_INDEX.md), [dated live fixture evaluation](docs/evidence/public-demo-live-results.md), [build log](BUILD_LOG.md), and [synthetic dataset documentation](test-fixtures/synthetic/README.md). The three-case run proves the public scenarios behaved as intended at that time; it is not claimed as statistical model accuracy.
 
 ## Local development
 

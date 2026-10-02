@@ -1,11 +1,13 @@
-import { type CSSProperties, useEffect, useRef, useState } from 'react';
+import { type CSSProperties, type FormEvent, useEffect, useRef, useState } from 'react';
 
 type Status = 'PASS' | 'REVIEW' | 'BLOCK';
-type Order = { orderId: string; displayNumber: string; customerAlias: string; requirements: Array<{ item: string; quantity: number; variant?: string; personalization?: string }> };
+type Requirement = { item: string; quantity: number; variant?: string; personalization?: string };
+type Order = { orderId: string; displayNumber: string; customerAlias: string; requirements: Requirement[] };
 type Check = { kind: string; requirement: string; expected: string; observed: string; result: 'MATCH' | 'MISMATCH' | 'MISSING' | 'UNCERTAIN'; confidence?: number; evidence: string };
 type Inspection = { inspectionId: string; status: Status; comparison: { checks: Check[]; reasons: string[] }; latencyMs: number; createdAt: string };
 
 const demoPayload = { customerAlias: 'Ayesha', requirements: [{ item: 'mug', quantity: 1, variant: 'blue' }, { item: 'chocolate bar', quantity: 1 }, { item: 'greeting card', quantity: 1, personalization: 'Happy Birthday Ayesha' }] };
+const initialCustomRequirements: Requirement[] = [{ item: '', quantity: 1 }, { item: '', quantity: 1 }];
 
 const demoSamples = [
   { id: 'block', name: 'Wrong parcel', detail: 'Red mug and Alisha card', expected: 'BLOCK', path: '/demo-data/wrong-parcel.webp', fileName: 'parcelproof-wrong-parcel.webp' },
@@ -27,10 +29,15 @@ export function App() {
   const [history, setHistory] = useState<Inspection[]>([]);
   const [busy, setBusy] = useState(false);
   const [loadingSample, setLoadingSample] = useState('');
+  const [demoMode, setDemoMode] = useState(false);
+  const [showCustom, setShowCustom] = useState(false);
+  const [customCustomer, setCustomCustomer] = useState('');
+  const [customRequirements, setCustomRequirements] = useState<Requirement[]>(initialCustomRequirements);
   const [error, setError] = useState('');
   const [dragging, setDragging] = useState(false);
   const [tilt, setTilt] = useState({ x: -4, y: 7 });
   const workflowRef = useRef<HTMLElement>(null);
+  const customRef = useRef<HTMLElement>(null);
 
   useEffect(() => { getApiUrl().then(setApiUrl).catch((cause: Error) => setError(cause.message)); }, []);
 
@@ -44,12 +51,46 @@ export function App() {
   }
 
   async function startDemo() {
-    setBusy(true); setError(''); setInspection(null); setHistory([]); setFile(null); setLoadingSample('');
+    setBusy(true); setError(''); setInspection(null); setHistory([]); setFile(null); setLoadingSample(''); setShowCustom(false); setDemoMode(true);
     try {
       const created = await api<Order>('/orders', { method: 'POST', body: JSON.stringify(demoPayload) });
       setOrder(created);
       setTimeout(() => workflowRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Could not create the demo order'); }
+    finally { setBusy(false); }
+  }
+
+  function openCustomOrder() {
+    setShowCustom(true); setDemoMode(false); setError('');
+    setTimeout(() => customRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+  }
+
+  function updateCustomRequirement(index: number, field: keyof Requirement, value: string) {
+    setCustomRequirements((current) => current.map((requirement, requirementIndex) => requirementIndex === index
+      ? { ...requirement, [field]: field === 'quantity' ? Math.max(1, Number(value) || 1) : value }
+      : requirement));
+  }
+
+  async function createCustomOrder(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const requirements = customRequirements
+      .filter((requirement) => requirement.item.trim())
+      .map((requirement) => ({
+        item: requirement.item.trim(),
+        quantity: requirement.quantity,
+        ...(requirement.variant?.trim() ? { variant: requirement.variant.trim() } : {}),
+        ...(requirement.personalization?.trim() ? { personalization: requirement.personalization.trim() } : {})
+      }));
+    if (!customCustomer.trim() || requirements.length === 0) {
+      setError('Add an order label and at least one item.');
+      return;
+    }
+    setBusy(true); setError(''); setInspection(null); setHistory([]); setFile(null);
+    try {
+      const created = await api<Order>('/orders', { method: 'POST', body: JSON.stringify({ customerAlias: customCustomer.trim(), requirements }) });
+      setOrder(created); setShowCustom(false); setDemoMode(false);
+      setTimeout(() => workflowRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+    } catch (cause) { setError(cause instanceof Error ? cause.message : 'Could not create the order'); }
     finally { setBusy(false); }
   }
 
@@ -79,12 +120,28 @@ export function App() {
     finally { setBusy(false); }
   }
 
+  function downloadReport() {
+    if (!order || !inspection) return;
+    const report = {
+      reportType: 'ParcelProof inspection evidence',
+      exportedAt: new Date().toISOString(),
+      order,
+      inspection
+    };
+    const url = URL.createObjectURL(new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' }));
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = `${order.displayNumber}-${inspection.status.toLowerCase()}-report.json`;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  }
+
   const statusCopy = inspection ? { PASS: ['Ready to ship', 'Every visible requirement was confidently satisfied.'], BLOCK: ['Shipment blocked', 'A visible mismatch must be corrected before shipment.'], REVIEW: ['Needs human review', 'The photo or model response could not establish a safe result.'] }[inspection.status] : null;
 
   return <main>
     <nav aria-label="Primary navigation"><a className="brand" href="#top"><span className="brandMark">P</span><span>ParcelProof<small>Visual dispatch control</small></span></a><div className="navLinks"><a href="#platform">Platform</a><a href="#how">How it works</a><a href="#trust">Trust model</a><span className="livePill"><i /> Live on AWS</span></div></nav>
 
-    <section className="hero" id="top"><div className="heroGlow glowOne"/><div className="heroGlow glowTwo"/><div className="heroCopy"><div className="releaseTag"><span>LIVE</span> Built on Amazon Bedrock</div><p className="eyebrow"><span>Visual dispatch control</span> · One photo before shipping</p><h1>Every parcel right.<br /><em>Before it ships.</em></h1><p className="lede">Catch wrong colours, missing items and misspelled personalisation while the parcel is still on the packing table—not after the customer opens it.</p><div className="actions"><button className="primary" onClick={startDemo} disabled={busy}>{busy && !order ? 'Preparing demo…' : 'Inspect a demo parcel'} <span>→</span></button><a className="secondary" href="#platform">See the platform</a></div><div className="proofRow"><span><i>✓</i> Private by design</span><span><i>✓</i> Explainable decisions</span><span><i>✓</i> 20-second workflow</span></div></div>
+    <section className="hero" id="top"><div className="heroGlow glowOne"/><div className="heroGlow glowTwo"/><div className="heroCopy"><div className="releaseTag"><span>LIVE</span> Built on Amazon Bedrock</div><p className="eyebrow"><span>Visual dispatch control</span> · One photo before shipping</p><h1>Every parcel right.<br /><em>Before it ships.</em></h1><p className="lede">Catch wrong colours, missing items and misspelled personalisation while the parcel is still on the packing table—not after the customer opens it.</p><div className="actions"><button className="primary" onClick={startDemo} disabled={busy}>{busy && !order ? 'Preparing demo…' : 'Inspect a demo parcel'} <span>→</span></button><button className="secondary" type="button" onClick={openCustomOrder}>Create custom order</button></div><div className="proofRow"><span><i>✓</i> Private by design</span><span><i>✓</i> Explainable decisions</span><span><i>✓</i> 20-second workflow</span></div></div>
       <div className="heroVisual" aria-label="Interactive 3D ParcelProof inspection" onMouseMove={(event) => { const bounds = event.currentTarget.getBoundingClientRect(); setTilt({ x: ((event.clientY - bounds.top) / bounds.height - .5) * -10, y: ((event.clientX - bounds.left) / bounds.width - .5) * 12 }); }} onMouseLeave={() => setTilt({ x: -4, y: 7 })} style={{ '--rx': `${tilt.x}deg`, '--ry': `${tilt.y}deg` } as CSSProperties}>
         <div className="heroHalo"/><div className="heroProduct"><img src="/assets/parcelproof-3d-hero.png" alt="3D parcel with a blue mug, greeting card and chocolate being visually inspected" /></div>
         <div className="heroStatus"><span className="statusCheck">✓</span><div><small>DECISION PREVIEW</small><strong>Every visible detail verified</strong></div><b>PASS</b></div>
@@ -95,20 +152,21 @@ export function App() {
     <section className="impactStrip"><p><strong>Built for the awkward orders.</strong> Colours, handwritten cards, printed names, mixed hampers, and one-off products.</p><div><span><b>3</b> outcomes</span><span><b>0</b> silent guesses</span><span><b>1</b> correction trail</span></div></section>
 
     <section className="platform" id="platform"><div className="sectionIntro compact"><p className="eyebrow">A complete dispatch control point</p><h2>Not another AI demo.<br/><em>A product your team can trust.</em></h2><p>One focused workflow turns a packing photo into an explainable shipment decision, with every correction preserved.</p></div><div className="productGrid">
-      <article className="productCard commandCard"><div className="cardLabel"><span>01</span> Control tower</div><h3>See every decision, not just a score.</h3><div className="miniDashboard"><div className="miniHeader"><span>Today’s dispatch</span><b>Live</b></div><div className="metricRow"><div><small>Checked</small><strong>128</strong><i>+18%</i></div><div><small>Protected</small><strong>£2.4k</strong><i>value</i></div></div><div className="sparkBars">{[42,58,39,72,66,83,75,94,88,100].map((height,index)=><i key={index} style={{height:`${height}%`}}/>)}</div><div className="miniStatuses"><span><i className="passDot"/> 114 ready</span><span><i className="reviewDot"/> 9 review</span><span><i className="blockDot"/> 5 blocked</span></div></div></article>
+      <article className="productCard commandCard"><div className="cardLabel"><span>01</span> Control tower</div><h3>See every decision, not just a score.</h3><div className="miniDashboard"><div className="miniHeader"><span>Dispatch controls</span><b>Product view</b></div><div className="metricRow"><div><small>Decision states</small><strong>3</strong><i>PASS · REVIEW · BLOCK</i></div><div><small>Silent guesses</small><strong>0</strong><i>fail-safe policy</i></div></div><div className="sparkBars" aria-label="Illustrative decision confidence"><i style={{height:'88%'}}/><i style={{height:'62%'}}/><i style={{height:'35%'}}/><i style={{height:'79%'}}/><i style={{height:'47%'}}/><i style={{height:'94%'}}/><i style={{height:'71%'}}/><i style={{height:'55%'}}/><i style={{height:'84%'}}/><i style={{height:'68%'}}/></div><div className="miniStatuses"><span><i className="passDot"/> Ready to ship</span><span><i className="reviewDot"/> Human review</span><span><i className="blockDot"/> Shipment blocked</span></div></div></article>
       <article className="productCard vaultCard"><div className="cardLabel"><span>02</span> Privacy vault</div><h3>Photos stay private by architecture.</h3><div className="vaultWidget"><div className="vaultRings"><span/><span/><span/></div><div className="vaultCore">⌁<small>ENCRYPTED</small></div><div className="vaultRoute"><span>Browser</span><i>→</i><span>Private S3</span><i>→</i><span>Bedrock</span></div></div></article>
       <article className="productCard policyCard"><div className="cardLabel"><span>03</span> Decision engine</div><h3>AI sees. Policy decides.</h3><div className="decisionWidget"><div><span className="node vision">◎</span><small>Observation</small></div><i>→</i><div><span className="node schema">{'{ }'}</span><small>Validation</small></div><i>→</i><div><span className="node outcome">✓</span><small>Outcome</small></div></div><div className="policyCode"><span>confidence</span> ≥ 0.85 <b>→ PASS</b><br/><span>mismatch</span> = true <b>→ BLOCK</b></div></article>
     </div></section>
 
     {error && !order && <div className="errorBanner globalError"><b>Couldn’t connect safely.</b><span>{error}</span><button onClick={() => setError('')}>Dismiss</button></div>}
 
-    {order && <section className="workflow" ref={workflowRef} aria-live="polite"><div className="workflowHeader"><div><p className="eyebrow">Live judge workflow</p><h2>{order.displayNumber}</h2><p>Birthday gift box for {order.customerAlias}</p></div><button className="resetButton" onClick={startDemo} disabled={busy}>Reset demo</button></div><div className="workspaceGrid"><div className="requirementsPanel"><div className="panelTitle"><span>01</span><div><h3>What should be packed</h3><p>Exact requirements from the order</p></div></div><div className="requirements">{order.requirements.map((req) => <div className="requirement" key={req.item}><span className="checkMark">✓</span><div><strong>{req.item}</strong><small>{req.variant ? `${req.variant} · ` : ''}Quantity {req.quantity}{req.personalization ? ` · “${req.personalization}”` : ''}</small></div></div>)}</div><div className="privacyNote"><span>⌁</span><p><strong>Private by design</strong><br/>The browser uploads directly to encrypted S3 using a five-minute link.</p></div></div>
+    {showCustom && !order && <section className="customBuilder" ref={customRef} id="custom-order"><div className="customBuilderHead"><div><p className="eyebrow">Your order, your rules</p><h2>Build a custom order</h2><p>Add the exact items, variants, quantities, and printed text the packed parcel must contain.</p></div><button type="button" className="customClose" onClick={() => setShowCustom(false)} aria-label="Close custom order builder">×</button></div><form className="customOrderForm" onSubmit={createCustomOrder}><label className="customCustomer"><span>Order or customer label</span><input value={customCustomer} onChange={(event) => setCustomCustomer(event.target.value)} placeholder="e.g. Maya's birthday box" maxLength={80} required /></label><div className="customRows">{customRequirements.map((requirement, index) => <div className="customRow" key={index}><label><span>Item</span><input value={requirement.item} onChange={(event) => updateCustomRequirement(index, 'item', event.target.value)} placeholder="e.g. ceramic mug" maxLength={80} /></label><label><span>Qty</span><input type="number" min="1" max="99" value={requirement.quantity} onChange={(event) => updateCustomRequirement(index, 'quantity', event.target.value)} /></label><label><span>Variant</span><input value={requirement.variant ?? ''} onChange={(event) => updateCustomRequirement(index, 'variant', event.target.value)} placeholder="e.g. blue" maxLength={80} /></label><label><span>Exact text</span><input value={requirement.personalization ?? ''} onChange={(event) => updateCustomRequirement(index, 'personalization', event.target.value)} placeholder="Optional personalisation" maxLength={160} /></label><button type="button" className="removeRequirement" onClick={() => setCustomRequirements((current) => current.filter((_, rowIndex) => rowIndex !== index))} disabled={customRequirements.length === 1} aria-label={`Remove item ${index + 1}`}>×</button></div>)}</div><div className="customActions"><button type="button" className="addRequirement" onClick={() => setCustomRequirements((current) => current.length < 5 ? [...current, { item: '', quantity: 1 }] : current)} disabled={customRequirements.length >= 5}>+ Add another item</button><button type="submit" className="createOrderButton" disabled={busy}>{busy ? 'Creating securely…' : 'Create order and inspect'} <span>→</span></button></div><p className="customPrivacy">Order data stays inside this demo environment. Packing photos use short-lived private upload links.</p></form></section>}
+
+    {order && <section className="workflow" ref={workflowRef} aria-live="polite"><div className="workflowHeader"><div><p className="eyebrow">Live inspection workspace</p><h2>{order.displayNumber}</h2><p>{order.customerAlias}</p></div><div className="workflowActions"><button className="resetButton" onClick={() => { setOrder(null); setInspection(null); setHistory([]); setFile(null); openCustomOrder(); }} disabled={busy}>New custom order</button><button className="resetButton" onClick={startDemo} disabled={busy}>Reset demo</button></div></div><div className="workspaceGrid"><div className="requirementsPanel"><div className="panelTitle"><span>01</span><div><h3>What should be packed</h3><p>Exact requirements from the order</p></div></div><div className="requirements">{order.requirements.map((req, index) => <div className="requirement" key={`${req.item}-${index}`}><span className="checkMark">✓</span><div><strong>{req.item}</strong><small>{req.variant ? `${req.variant} · ` : ''}Quantity {req.quantity}{req.personalization ? ` · “${req.personalization}”` : ''}</small></div></div>)}</div><div className="privacyNote"><span>⌁</span><p><strong>Private by design</strong><br/>The browser uploads directly to encrypted S3 using a five-minute link.</p></div></div>
       <div className="uploadPanel"><div className="panelTitle"><span>02</span><div><h3>Show us the packed order</h3><p>Choose a realistic demo photo or upload your own</p></div></div>
-        <div className="samplePicker"><div className="sampleIntro"><strong>Test data included</strong><small>Realistic synthetic fixtures · no customer data</small></div><div className="sampleGrid">{demoSamples.map((sample) => <button type="button" key={sample.id} className={file?.name === sample.fileName ? 'selected' : ''} onClick={() => chooseDemoSample(sample)} disabled={busy || loadingSample !== ''}><img src={sample.path} alt="" /><span><b>{loadingSample === sample.id ? 'Loading…' : sample.name}</b><small>{sample.detail}</small><i className={`sampleOutcome outcome-${sample.id}`}>Expected {sample.expected}</i></span></button>)}</div></div>
-        <div className="orDivider"><span>or use your own photo</span></div>
+        {demoMode && <><div className="samplePicker"><div className="sampleIntro"><strong>Test data included</strong><small>Realistic synthetic fixtures · no customer data</small></div><div className="sampleGrid">{demoSamples.map((sample) => <button type="button" key={sample.id} className={file?.name === sample.fileName ? 'selected' : ''} onClick={() => chooseDemoSample(sample)} disabled={busy || loadingSample !== ''}><img src={sample.path} alt="" /><span><b>{loadingSample === sample.id ? 'Loading…' : sample.name}</b><small>{sample.detail}</small><i className={`sampleOutcome outcome-${sample.id}`}>Expected {sample.expected}</i></span></button>)}</div></div><div className="orDivider"><span>or use your own photo</span></div></>}
         <label className={`dropZone ${dragging ? 'dragging' : ''} ${file ? 'hasFile' : ''}`} onDragOver={(event) => { event.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={(event) => { event.preventDefault(); setDragging(false); setFile(event.dataTransfer.files[0] ?? null); }}><input type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => setFile(event.target.files?.[0] ?? null)} /><span className="uploadIcon">↑</span><strong>{file ? file.name : 'Drop a clear packing photo here'}</strong><small>{file ? `${(file.size / 1024 / 1024).toFixed(2)} MB · ready to inspect` : 'JPG, PNG, or WebP · maximum 8 MB'}</small></label><button className="inspectButton" disabled={!file || busy} onClick={inspect}>{busy ? 'Inspecting visible evidence…' : inspection ? 'Inspect corrected parcel' : 'Inspect this parcel'} <span>→</span></button><p className="limitText">Only visible evidence is checked. Hidden, sealed, or obscured items require human review.</p></div></div>
       {error && <div className="errorBanner"><b>Couldn’t complete that safely.</b><span>{error}</span><button onClick={() => setError('')}>Dismiss</button></div>}
-      {inspection && statusCopy && <section className={`resultPanel status-${inspection.status.toLowerCase()}`}><div className="resultHero"><span className="resultIcon">{inspection.status === 'PASS' ? '✓' : inspection.status === 'BLOCK' ? '!' : '?'}</span><div><p>INSPECTION RESULT</p><h2>{statusCopy[0]}</h2><span>{statusCopy[1]}</span></div><div className="latency">{(inspection.latencyMs / 1000).toFixed(1)}s<small>inspection</small></div></div>{inspection.comparison.reasons.length > 0 && <div className="reasonList">{inspection.comparison.reasons.map((reason) => <p key={reason}>• {reason}</p>)}</div>}{inspection.comparison.checks.length > 0 && <div className="resultTable"><div className="resultRow head"><span>Requirement</span><span>Expected</span><span>Observed</span><span>Result</span></div>{inspection.comparison.checks.map((check, index) => <div className="resultRow" key={`${check.kind}-${index}`}><span><b>{check.requirement}</b><small>{check.kind.toLowerCase()}</small></span><span>{check.expected}</span><span>{check.observed}</span><span><i className={`chip ${check.result.toLowerCase()}`}>{check.result}</i>{check.confidence !== undefined && <small>{Math.round(check.confidence * 100)}% confidence</small>}</span></div>)}</div>}{inspection.status !== 'PASS' && <div className="correctAction"><div><strong>Correct the parcel, then inspect again.</strong><p>The next inspection stays linked to this order so judges can see the full recovery trail.</p></div><button onClick={() => document.querySelector<HTMLInputElement>('.dropZone input')?.click()}>Choose corrected photo</button></div>}</section>}
+      {inspection && statusCopy && <section className={`resultPanel status-${inspection.status.toLowerCase()}`}><div className="resultHero"><span className="resultIcon">{inspection.status === 'PASS' ? '✓' : inspection.status === 'BLOCK' ? '!' : '?'}</span><div><p>INSPECTION RESULT</p><h2>{statusCopy[0]}</h2><span>{statusCopy[1]}</span></div><div className="latency">{(inspection.latencyMs / 1000).toFixed(1)}s<small>inspection</small></div></div>{inspection.comparison.reasons.length > 0 && <div className="reasonList">{inspection.comparison.reasons.map((reason) => <p key={reason}>• {reason}</p>)}</div>}{inspection.comparison.checks.length > 0 && <div className="resultTable"><div className="resultRow head"><span>Requirement</span><span>Expected</span><span>Observed</span><span>Result</span></div>{inspection.comparison.checks.map((check, index) => <div className="resultRow" key={`${check.kind}-${index}`}><span><b>{check.requirement}</b><small>{check.kind.toLowerCase()}</small></span><span>{check.expected}</span><span>{check.observed}</span><span><i className={`chip ${check.result.toLowerCase()}`}>{check.result}</i>{check.confidence !== undefined && <small>{Math.round(check.confidence * 100)}% confidence</small>}</span></div>)}</div>}<div className="resultTools"><div><strong>Keep the proof</strong><p>Export the order, checks, reasons, confidence, and timestamp as a portable JSON report.</p></div><button type="button" onClick={downloadReport}>Download inspection report ↓</button></div>{inspection.status !== 'PASS' && <div className="correctAction"><div><strong>Correct the parcel, then inspect again.</strong><p>The next inspection stays linked to this order so judges can see the full recovery trail.</p></div><button onClick={() => document.querySelector<HTMLInputElement>('.dropZone input')?.click()}>Choose corrected photo</button></div>}</section>}
       {history.length > 0 && <section className="historyPanel"><div><p className="eyebrow">Evidence trail</p><h3>Inspection history</h3></div><div className="timeline">{history.map((item, index) => <div className="historyItem" key={item.inspectionId}><span>{history.length - index}</span><div><strong>{item.status === 'PASS' ? 'Ready to ship' : item.status === 'BLOCK' ? 'Shipment blocked' : 'Human review needed'}</strong><small>{new Date(item.createdAt).toLocaleString()} · {(item.latencyMs / 1000).toFixed(1)}s</small></div><i className={`chip ${item.status.toLowerCase()}`}>{item.status}</i></div>)}</div></section>}</section>}
 
     <section className="how" id="how"><div className="sectionIntro"><p className="eyebrow">A twenty-second control point</p><h2>From packed to proven.</h2><p>Designed around one decision a small seller makes dozens of times a day: is this exact parcel safe to ship?</p></div><div className="stepGrid"><article><span>01</span><div className="stepIcon">≡</div><h3>Load the truth</h3><p>Items, quantities, variants, and exact personalised text form the order contract.</p></article><article><span>02</span><div className="stepIcon">◎</div><h3>Observe the parcel</h3><p>Amazon Bedrock extracts visible evidence from one private packing photo.</p></article><article><span>03</span><div className="stepIcon">◇</div><h3>Decide safely</h3><p>Deterministic TypeScript policy returns PASS, BLOCK, or REVIEW—never a model hunch.</p></article></div></section>

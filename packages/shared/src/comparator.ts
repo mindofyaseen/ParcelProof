@@ -38,6 +38,11 @@ function canonicalItem(value: string): string {
   return key;
 }
 
+function textRelevance(candidate: string, expected: string): number {
+  const candidateTokens = new Set(normalizedKey(candidate).split(/\s+/));
+  return normalizedKey(expected).split(/\s+/).filter((token) => candidateTokens.has(token)).length;
+}
+
 export function comparePackingInspection(
   order: Order,
   observation: PackingObservation,
@@ -55,7 +60,8 @@ export function comparePackingInspection(
 
   if (observation.uncertainties.length > 0) {
     hasReview = true;
-    reasons.add(`Model uncertainty: ${observation.uncertainties.join('; ')}.`);
+    const uncertainty = observation.uncertainties.join('; ').replace(/[.!?]+$/, '');
+    reasons.add(`Model uncertainty: ${uncertainty}.`);
   }
 
   for (const requirement of order.requirements) {
@@ -140,7 +146,18 @@ export function comparePackingInspection(
 
     if (requirement.personalization) {
       const expectedText = normalize(requirement.personalization);
-      const bestText = [...observation.visibleTexts].sort((a, b) => b.confidence - a.confidence)[0];
+      const itemTextKeys = new Set(observed.visibleText.map(normalizedKey));
+      const exactText = observation.visibleTexts.find((candidate) => normalize(candidate.text) === expectedText);
+      const itemText = observation.visibleTexts.find((candidate) => itemTextKeys.has(normalizedKey(candidate.text)));
+      const embeddedItemText = observed.visibleText[0] ? {
+        text: observed.visibleText[0],
+        confidence: observed.confidence,
+        evidence: observed.evidence
+      } : undefined;
+      const relevantText = [...observation.visibleTexts].sort((a, b) =>
+        textRelevance(b.text, expectedText) - textRelevance(a.text, expectedText) || b.confidence - a.confidence
+      )[0];
+      const bestText = exactText ?? itemText ?? relevantText ?? embeddedItemText;
       const textConfident = bestText !== undefined && bestText.confidence >= confidenceThreshold;
       const textMatches = bestText !== undefined && normalize(bestText.text) === expectedText;
       checks.push({

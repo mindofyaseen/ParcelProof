@@ -10,6 +10,7 @@
     "typecheck": "npm run build --workspace @parcelproof/shared && npm run typecheck --workspaces --if-present",
     "test": "npm run build --workspace @parcelproof/web && vitest run",
     "test:data": "node scripts/validate-synthetic-dataset.mjs",
+    "test:live-demo": "node scripts/run-public-demo-evaluation.mjs",
     "test:e2e": "playwright test",
     "build": "npm run build --workspace @parcelproof/shared && npm run build --workspace @parcelproof/api && npm run build --workspace @parcelproof/web && npm run build --workspace @parcelproof/infrastructure",
     "cdk:synth": "npm run build && cdk synth --app \"node infrastructure/dist/app.js\"",

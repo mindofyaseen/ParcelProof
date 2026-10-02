@@ -16,6 +16,8 @@ This short, stable entry point links the public proof behind the AWS Zero to Shi
 
 - [Live judge workflow screenshot](docs/evidence/live-judge-workflow.png)
 - [Public one-click demo-data workflow](docs/evidence/public-demo-data.png)
+- [Custom-order product workflow](docs/evidence/product-v4-custom-order.png)
+- [Dated live evaluation of all three public fixtures](docs/evidence/public-demo-live-results.md)
 - [Desktop product screenshot](docs/evidence/ui-v3-desktop.png)
 - [Mobile product screenshot](docs/evidence/ui-v3-mobile.png)
 - [12-case synthetic dataset contact sheet](docs/evidence/synthetic-dataset-contact-sheet.jpg)

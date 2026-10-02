@@ -87,6 +87,25 @@ describe('comparePackingInspection', () => {
     expect(comparePackingInspection(order, nearMatch).status).toBe('BLOCK');
   });
 
+  it('matches personalization to the required item instead of unrelated higher-confidence packaging text', () => {
+    const packagingText: PackingObservation = {
+      ...correctObservation,
+      visibleTexts: [
+        { text: 'Dairy Milk Chocolate', confidence: 0.99, evidence: 'Brand text is visible on the wrapper.' },
+        { text: 'Happy Birthday Ayesha', confidence: 0.92, evidence: 'The message is visible on the greeting card.' }
+      ]
+    };
+
+    const result = comparePackingInspection(order, packagingText);
+
+    expect(result.status).toBe('PASS');
+    expect(result.checks).toContainEqual(expect.objectContaining({
+      kind: 'PERSONALIZATION',
+      observed: 'Happy Birthday Ayesha',
+      result: 'MATCH'
+    }));
+  });
+
   it('uses only explicit supported aliases when matching item labels', () => {
     const aliased: PackingObservation = {
       ...correctObservation,
